@@ -51,13 +51,13 @@ class UnsupportedTypeError(Exception):
 
 
 class Field(object):
-    def __init__(self, name, type, number, repeated=False, required=False, default=None, **options):
+    def __init__(self, name, type, id, repeated=False, required=False, default=None, **options):
         if type not in AllowedSubTypes:
             raise UnsupportedTypeError
 
         self.name = name
         self.type = type
-        self.number = number
+        self.id = id
         self.repeated = repeated
         self.required = required
         self.default = default
@@ -120,7 +120,7 @@ class Field(object):
 
         elif self.type in LengthSubTypes:
             if self.type == 'String':
-                data = value.decode('utf-8')
+                data = value.encode('utf-8')
             elif self.type == 'Bytes':
                 data = value
             elif self.type == 'Message':
@@ -136,7 +136,7 @@ class Field(object):
         else:
             raise UnsupportedTypeError
 
-        return self.tag + data
+        return bytes([self.tag]) + data
 
     def _decode_varint(self, data):
         binary = []
@@ -173,17 +173,13 @@ class Field(object):
         return (n >> 1) ^- (n & 1)
 
     def _add_tag(self):
-        self.tag = self.number << 3
+        self.tag = self.id << 3
         if self.type in Fixed64SubTypes:
             self.tag += 1
         elif self.type in Fixed32SubTypes:
             self.tag += 5
         elif self.type in LengthSubTypes:
             self.tag += 2
-        else:
-            raise UnsupportedTypeError
-
-        
     
 
 class Message(object):
