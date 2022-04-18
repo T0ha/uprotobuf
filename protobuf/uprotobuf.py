@@ -112,8 +112,31 @@ class Field(object):
         else:
             raise UnsupportedTypeError
 
-    def encode(self):
-        pass
+    def encode(self, value):
+        if self.type in VarintSubTypes:
+            if self.type in ZigZagSubTypes:
+                value = self._encodeZigZag(value)
+            data = self._encode_varint(value)
+
+        elif self.type in LengthSubTypes:
+            if self.type == 'String':
+                data = value.decode('utf-8')
+            elif self.type == 'Bytes':
+                data = value
+            elif self.type == 'Message':
+                data = self.cls.encode(value)
+            else:
+                raise UnsupportedTypeError
+
+            data = self._encode_varint(len(data)) + data
+
+        elif self.type in FixedSubTypes:
+            data = struct.pack(self._fmt, value)
+
+        else:
+            raise UnsupportedTypeError
+
+        return self.tag + data
 
     def _decode_varint(self, data):
         binary = []
