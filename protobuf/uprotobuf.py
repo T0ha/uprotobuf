@@ -1,3 +1,6 @@
+from collections import namedtuple
+
+
 try:
     import ustruct as struct
 except ImportError:
@@ -49,6 +52,9 @@ class FieldTagError(Exception):
 class UnsupportedTypeError(Exception):
     pass
 
+class FieldNotFound(Exception):
+    pass
+
 
 class Field(object):
     def __init__(self, name, type, id, repeated=False, required=False, default=None, **options):
@@ -64,7 +70,7 @@ class Field(object):
         self.options = options
 
         if type == 'Message':
-            self.cls = options['class']
+            self.cls = options['cls']
 
         if type == 'Float':
             self._fmt='<f'
@@ -77,20 +83,23 @@ class Field(object):
 
         self._add_tag()
 
-    def decode(self, data):
-        (tag, rest) = self._decode_varint(data)
+    @staticmethod
+    def get_tag(data):
+        return Field._decode_varint(data)
+
+    def decode(self, tag, data):
         if tag != self.tag:
             raise FieldTagError
 
         if self.type in VarintSubTypes:
-            (value, rest) = self._decode_varint(rest)
+            (value, rest) = self._decode_varint(data)
             if self.type in ZigZagSubTypes:
                 value = self._decodeZigZag(value)
 
             return value, rest
 
         elif self.type in LengthSubTypes:
-            (length, rest) = self._decode_varint(rest)
+            (length, rest) = self._decode_varint(data)
             (value, rest) = rest[0: length], rest[length:]
             if self.type == 'String':
                 return value.decode('utf-8'), rest
@@ -102,11 +111,11 @@ class Field(object):
                 raise UnsupportedTypeError
 
         elif self.type in Fixed64SubTypes:
-            (value, rest) = rest[0:8], rest[8:]
+            (value, rest) = data[0:8], data[8:]
             return struct.unpack(self._fmt, value), rest
              
         elif self.type in Fixed32SubTypes:
-            (value, rest) = rest[0:4], rest[4:]
+            (value, rest) = data[0:4], data[4:]
             return struct.unpack(self._fmt, value), rest
 
         else:
@@ -138,7 +147,8 @@ class Field(object):
 
         return bytes([self.tag]) + data
 
-    def _decode_varint(self, data):
+    @staticmethod
+    def _decode_varint(data):
         binary = []
         i = 0
         while True:
@@ -183,5 +193,49 @@ class Field(object):
     
 
 class Message(object):
-    def __init__(self) -> None:
-        pass
+    _fields = []
+    _fields_by_tag = {}
+    _initiated = False
+
+    def __init__(self):
+        for field in self._fields:
+            self._fields_by_tag[field.tag] =  field
+            setattr(self, field.name, field.default)
+        self._initiated = True
+
+    @classmethod
+    def decode(cls, data):
+        msg = cls()
+        msg.merge_encoded(data)
+        return msg
+
+    def encode(self):
+        data = b''
+        for field in self._fields:
+            data += field.encode(self.__dict__[field.name])
+        return data
+
+    def merge(self, msg):
+        # TODO: refactor for efficiency
+        self.merge_encoded(msg.encode())
+
+    def merge_encoded(self, data):
+        rest = data
+        while rest != b'':
+            (tag, rest) = Field.get_tag(rest)
+            field = self._fields_by_tag[tag]
+            (value, rest) = field.decode(tag, rest)
+            if field.repeated:
+                self.__dict__[field.name].append(value)
+            else:
+                print(field.name, value)
+                setattr(self, field.name, value)
+
+    def __repr__(self):
+        return str(self.__dict__)
+
+   # def __setattr__(self, name, value):
+   #     if self._initiated and name not in self.__dict__:
+   #         raise FieldNotFound(name)
+   #     else:
+   #         setattr(self, name, value)
