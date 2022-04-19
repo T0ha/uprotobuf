@@ -66,7 +66,6 @@ class Field(object):
         self.id = id
         self.repeated = repeated
         self.required = required
-        self.default = default
         self.options = options
 
         if type == 'Message':
@@ -82,6 +81,7 @@ class Field(object):
             self._fmt="<q"
 
         self._add_tag()
+        self._add_default(default)
 
     @staticmethod
     def get_tag(data):
@@ -122,6 +122,9 @@ class Field(object):
             raise UnsupportedTypeError
 
     def encode(self, value):
+        if value == self.default:
+            return b""
+
         if self.type in VarintSubTypes:
             if self.type in ZigZagSubTypes:
                 value = self._encodeZigZag(value)
@@ -190,6 +193,23 @@ class Field(object):
             self.tag += 5
         elif self.type in LengthSubTypes:
             self.tag += 2
+
+    def _add_default(self, default):
+        if default is not None:
+            self.default = default
+        elif self.repeated:
+            self.default = []
+        elif self.type in VarintSubTypes + FixedSubTypes:
+            self.default = 0
+        elif self.type == 'String':
+            self.default = ""
+        elif self.type == 'Bytes':
+            self.default = b""
+        elif self.type == 'Bool':
+            self.default = False
+        else:
+            self.default = None
+
     
 
 class Message(object):
