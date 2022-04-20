@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 import os.path as osp
+from struct import pack
+from sys import prefix
+from types import prepare_class
 from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import DescriptorProto, EnumDescriptorProto, FieldDescriptorProto as FProto
 
@@ -26,14 +29,15 @@ def getType(field_type):
     else: raise Exception()
     return type
 
-def message_class(item, indent=0):
-    out = indent * "\t" + "class {}(Message):\n".format(item.name.capitalize())
+def message_class(package, item, indent=0):
+    prefix = package + "." + item.name
+    out = indent * "\t" + "class {}(Message):\n".format(item.name)
     for nested in item.nested_type:
-        out += message_class(nested, indent + 1)
+        out += message_class(prefix, nested, indent + 1)
         out += "\n"
 
     for enum in item.enum_type:
-        out += indent * "\t" + "\tclass {}(Enum):\n".format(enum.name.capitalize())
+        out += indent * "\t" + "\tclass {}(Enum):\n".format(enum.name)
         for value in enum.value:
             out += (indent + 1) * '\t' + '\t{} = {}\n'.format(value.name, value.number)
         out += "\n"
@@ -49,7 +53,7 @@ def message_class(item, indent=0):
             field.number,
         )
         if field.type == FProto.TYPE_ENUM: 
-            enum_name = field.type_name.split('.')[-1].capitalize()
+            enum_name = field.type_name.removeprefix(package + ".").removeprefix(item.name + ".")
             out += ", enum={}".format(enum_name)
 
         if field.label == FProto.LABEL_REQUIRED:
@@ -58,7 +62,8 @@ def message_class(item, indent=0):
             out += ", repeated=True"
 
         if field.type == FProto.TYPE_MESSAGE:
-            out += ", cls='{}'".format(field.type_name)
+            field_name = field.type_name.removeprefix(package + ".").removeprefix(item.name + ".")
+            out += ", cls={}".format(field_name)
         out += "),\n"
     out += indent * "\t" +"\t]\n"
 
@@ -74,7 +79,7 @@ def generateCode(request, response):
         for item in proto_file.message_type:
             print((item, type(item)), file=open('item.out', 'a'))
             if isinstance(item, DescriptorProto):
-                output += message_class(item)
+                output += message_class("." + proto_file.package, item)
 
         f = response.file.add()
         f.name = "{}_upb2.py".format(osp.splitext(proto_file.name)[0])
