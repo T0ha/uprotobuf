@@ -1,3 +1,2 @@
-
-tests/__pycache__
-protobuf/__pycache__
+*_upb2.py
+__pycache__
