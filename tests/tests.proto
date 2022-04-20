@@ -9,6 +9,10 @@ message Test1 {
     ValueC=3;
   }
 
+  message TestEmbed {
+    optional int32 Int32 = 1;
+  }
+
   // Varint types
   optional int32 Int32 = 1;
   optional sint32 Sint32 = 2;
@@ -32,4 +36,7 @@ message Test1 {
 
   // Lengths types
   optional string String = 15;
+  optional bytes Bytes = 16;
+  optional TestEmbed Message_ = 17;
+  repeated int32 Repeated = 18;
 }
