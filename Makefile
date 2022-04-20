@@ -4,7 +4,7 @@ INCLUDE = tests
 
 
 test: tests/tests_upb2.py
-	python -m unittest
+	python3 -m unittest
 
 proto: clean tests/tests_upb2.py
 
