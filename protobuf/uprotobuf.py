@@ -6,8 +6,6 @@ try:
 except ImportError:
     import struct
 
-#WireType = (Invalid=-1, Varint=0, Bit64=1, Length=2, Bit32=5)
-#FieldType = (Invalid=-1, Optional=1, Required=2, Repeated=3)
 
 ZigZagSubTypes = (
     'SInt32',
@@ -55,6 +53,12 @@ class UnsupportedTypeError(Exception):
 class FieldNotFound(Exception):
     pass
 
+class Enum(dict):
+    def __setattr__(self, name, value):
+        self[name] = value
+
+    def __getattr__(self, name):
+        return self[name]
 
 class Field(object):
     def __init__(self, name, type, id, repeated=False, required=False, default=None, **options):
