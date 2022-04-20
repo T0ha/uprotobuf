@@ -55,6 +55,12 @@ def message_class(package, item, indent=0):
         if field.type == FProto.TYPE_ENUM: 
             enum_name = field.type_name.removeprefix(package + ".").removeprefix(item.name + ".")
             out += ", cls={}".format(enum_name)
+            if field.default_value:
+                out += ", default={}".format(enum_name + "." + field.default_value)
+        else:
+            if field.default_value:
+                out += ", default={}".format(field.default_value)
+
 
         if field.label == FProto.LABEL_REQUIRED:
             out += ", required=True"
