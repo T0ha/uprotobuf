@@ -1,2 +1,5 @@
 *_upb2.py
+*_pb2.py
 __pycache__
+
+tests/test_data_generated.py
