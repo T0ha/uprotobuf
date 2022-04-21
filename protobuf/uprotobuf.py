@@ -72,7 +72,7 @@ class Field(object):
         self.required = required
         self.options = options
 
-        if type == 'Message':
+        if type in ('Message', 'Enum'):
             self.cls = options['cls']
 
         if type == 'Float':
@@ -203,6 +203,10 @@ class Field(object):
             self.default = default
         elif self.repeated:
             self.default = []
+        elif self.type in ('Float', 'Double'):
+            self.default = 0.0
+        elif self.type == 'Enum':
+            self.default = self.cls.__dict__.values()
         elif self.type in VarintSubTypes + FixedSubTypes:
             self.default = 0
         elif self.type == 'String':
