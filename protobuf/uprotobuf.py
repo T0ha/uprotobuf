@@ -1,6 +1,3 @@
-from collections import namedtuple
-
-
 try:
     import ustruct as struct
 except ImportError:
@@ -12,14 +9,17 @@ ZigZagSubTypes = (
     'SInt64',
 )
 
-VarintSubTypes = (
+SignedSubTypes = (
     'Int32',
     'Int64',
+)
+
+VarintSubTypes = (
     'UInt32',
     'UInt64',
     'Bool',
     'Enum',
-) + ZigZagSubTypes
+) + ZigZagSubTypes + SignedSubTypes
 
 LengthSubTypes = (
     'String',
@@ -97,7 +97,11 @@ class Field(object):
 
         if self.type in VarintSubTypes:
             (value, rest) = self._decode_varint(data)
-            if self.type in ZigZagSubTypes:
+            if self.type == 'Bool':
+                value = bool(value)
+            elif self.type in SignedSubTypes:
+                value = self._to_signed(value)
+            elif self.type in ZigZagSubTypes:
                 value = self._decodeZigZag(value)
 
             return value, rest
@@ -116,11 +120,11 @@ class Field(object):
 
         elif self.type in Fixed64SubTypes:
             (value, rest) = data[0:8], data[8:]
-            return struct.unpack(self._fmt, value), rest
+            return struct.unpack(self._fmt, value)[0], rest
              
         elif self.type in Fixed32SubTypes:
             (value, rest) = data[0:4], data[4:]
-            return struct.unpack(self._fmt, value), rest
+            return struct.unpack(self._fmt, value)[0], rest
 
         else:
             raise UnsupportedTypeError
@@ -218,6 +222,17 @@ class Field(object):
         else:
             self.default = None
 
+    def _to_signed(self, value):
+        if self.type == 'Int32':
+            bitLength = 32
+        else:
+            bitLength = 64
+
+        mask = (2 ** bitLength) - 1
+        if value & (1 << (bitLength - 1)):
+            return value | ~mask
+        else:
+            return value & mask
     
 
 class Message(object):
@@ -256,7 +271,6 @@ class Message(object):
             if field.repeated:
                 self.__dict__[field.name].append(value)
             else:
-                print(field.name, value)
                 setattr(self, field.name, value)
 
     def __repr__(self):
