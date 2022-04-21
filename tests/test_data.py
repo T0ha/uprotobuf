@@ -1,0 +1,6 @@
+ENCODED_1 = b'\x01'
+ENCODED_127 = b'\x7f'
+ENCODED_128 = b'\x80\x01'
+ENCODED_256 = b'\x80\x02'
+ENCODED_65535 = b'\xff\xff\x03'
+ENCODED_65536 = b'\x80\x80\x04'
