@@ -21,6 +21,7 @@ tests/tests_pb2.py:
 	protoc --python_out=. ${PROTO}
 
 clean:
-	rm -rf tests/*_upb2.py
-	rm -rf tests/*_pb2.py
+	rm -rf tests/*_upb+.py
+	rm -rf tests/*_pb+.py
 	rm -rf tests/__pycache__
+	rm -rf tests/*_generated.py
