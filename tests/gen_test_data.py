@@ -5,7 +5,7 @@ VALUES = [
     0, 1, -1,
     127, -127, 128, -128,
     255, -255, 256, -256,
-    65535, -65535, 655336, -65536
+    65535, -65535, 65537, -65536
 ]
 
 def create_value(val, field_type=FProto.TYPE_INT32):
@@ -66,7 +66,10 @@ def main():
                         setattr(message, field.name, value)
 
                     print("{", file=f)
-                    print("'decoded': {},".format(val), file=f)
+                    if type(value) == str:
+                        print("'decoded': '{}',".format(value), file=f)
+                    else:
+                        print("'decoded': {},".format(value), file=f)
                     print("'name': '{}',\n'encoded': {},".format(field.name, message.SerializeToString()), file=f)
                     print("},", file=f)
                     
