@@ -1,6 +1,6 @@
 import unittest
-from .test_data_generated import *
-from .tests_upb2 import Test1
+from generated.test_data_generated import *
+from generated.tests_upb2 import Test1
 
 class TestMessage(unittest.TestCase):
     def test_message_defaults(self):

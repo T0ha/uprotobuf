@@ -18,7 +18,6 @@ class TestField(unittest.TestCase):
         field = Field('test', 'Bool', 1)
 
         for n in numbers:
-            print(n)
             self.assertEqual((n, b''), field._decode_varint(field._encode_varint(n)))
     
     def test_encode_bool(self):

@@ -1,27 +1,42 @@
 PROTO = "tests/tests.proto"
-OUTPUT = tests
+OUTPUT = generated
 INCLUDE = tests
 
+.PHONY: full-tests tests test micro-deps micro-test clean proto
+	
+full-tests: tests clean
 
-test: tests/tests_upb2.py tests/test_data_generated.py
+tests: test micro-test
+
+test: ${OUTPUT}/tests_upb2.py ${OUTPUT}/test_data_generated.py
 	python3 -m unittest
 
-tests/test_data_generated.py: tests/tests_pb2.py
-	python3 -m tests.gen_test_data
+micro-deps:
+	micropython -m upip install -p . micropython-unittest
 
-proto: clean tests/tests_upb2.py tests/tests_pb2.py
+micro-test: micro-deps
+	micropython -c 'import unittest; unittest.main("tests");'
 
-tests/tests_upb2.py:
-	protoc --plugin=protoc-gen-custom=protobuf/uprotobuf_plugin.py \
+${OUTPUT}/test_data_generated.py: ${OUTPUT}/tests_pb2.py
+	python3 -c 'from scripts.gen_test_data import main; main();'
+
+proto: clean ${OUTPUT}/tests_upb2.py ${OUTPUT}/tests_pb2.py
+
+${OUTPUT}/tests_upb2.py:
+	protoc --plugin=protoc-gen-custom=scripts/uprotobuf_plugin.py \
          --custom_out=${OUTPUT} \
          -I${INCLUDE} \
          ${PROTO}
 
-tests/tests_pb2.py:
-	protoc --python_out=. ${PROTO}
+${OUTPUT}/tests_pb2.py:
+	protoc --python_out=${OUTPUT} ${PROTO}
+	mv ${OUTPUT}/tests/*_pb2.py ${OUTPUT}
+	rm -rf ${OUTPUT}/tests
 
 clean:
-	rm -rf tests/*_upb+.py
-	rm -rf tests/*_pb+.py
-	rm -rf tests/__pycache__
-	rm -rf tests/*_generated.py
+	rm -rf ${OUTPUT}/*_upb*.py
+	rm -rf ${OUTPUT}/*_pb*.py
+	rm -rf **/__pycache__
+	rm -rf __pycache__
+	rm -rf ${OUTPUT}/*_generated.py
+	rm -rf unittest.py

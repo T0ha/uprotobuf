@@ -1,5 +1,5 @@
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto as FProto
-from .tests_pb2 import Test1
+from generated.tests_pb2 import Test1
 
 VALUES = [
     0, 1, -1,
@@ -51,7 +51,7 @@ def create_value(val, field_type=FProto.TYPE_INT32):
 
 def main():
     fields = []
-    with open('tests/test_data_generated.py', 'w') as f:
+    with open('generated/test_data_generated.py', 'w') as f:
         print("TEST_DATA = [", file=f)
         for field in Test1.DESCRIPTOR.fields:
             fields.append(field.name)
