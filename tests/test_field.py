@@ -1,6 +1,6 @@
 import unittest
 from protobuf.uprotobuf import Field
-from random import randint
+from random import getrandbits
 from .test_data import *
 
 class TestField(unittest.TestCase):
@@ -14,10 +14,11 @@ class TestField(unittest.TestCase):
         self.assertEqual(ENCODED_65536, field._encode_varint(65536))
 
     def test_decode_encode_varint(self):
-        numbers = [randint(1, 65536) for _ in range(1, randint(10, 30))]
+        numbers = [getrandbits(31) for _ in range(1, getrandbits(8))]
         field = Field('test', 'Bool', 1)
 
         for n in numbers:
+            print(n)
             self.assertEqual((n, b''), field._decode_varint(field._encode_varint(n)))
     
     def test_encode_bool(self):
@@ -87,34 +88,34 @@ class TestField(unittest.TestCase):
         self.assertEqual((True, b''), field.decode(0x08, field.encode(True)[1:]))
 
     def test_decode_encode_int32(self):
-        numbers = [randint(1, 65536) for _ in range(1, randint(10, 30))]
+        numbers = [getrandbits(31) for _ in range(1, getrandbits(8))]
         field = Field('test', 'Int32', 1)
 
         for n in numbers:
             self.assertEqual((n, b''), field.decode(0x08, field.encode(n)[1:]))
 
     def test_decode_encode_uint32(self):
-        numbers = [randint(1, 65536) for _ in range(1, randint(10, 30))]
+        numbers = [getrandbits(31) for _ in range(1, getrandbits(8))]
         field = Field('test', 'UInt32', 1)
 
         for n in numbers:
             self.assertEqual((n, b''), field.decode(0x08, field.encode(n)[1:]))
 
     def test_decode_encode_sint32(self):
-        numbers = [randint(1, 65536) for _ in range(1, randint(10, 30))]
+        numbers = [getrandbits(31) for _ in range(1, getrandbits(8))]
         field = Field('test', 'Int32', 1)
 
         for n in numbers:
             self.assertEqual((n, b''), field.decode(0x08, field.encode(n)[1:]))
 
     def test_decode_encode_int64(self):
-        numbers = [randint(1, 65536) for _ in range(1, randint(10, 30))]
+        numbers = [getrandbits(31) for _ in range(1, getrandbits(8))]
         field = Field('test', 'Int64', 1)
 
         for n in numbers:
             self.assertEqual((n, b''), field.decode(0x08, field.encode(n)[1:]))
     def test_decode_encode_uint64(self):
-        numbers = [randint(1, 65536) for _ in range(1, randint(10, 30))]
+        numbers = [getrandbits(31) for _ in range(1, getrandbits(8))]
         field = Field('test', 'UInt64', 1)
 
         for n in numbers:
@@ -122,7 +123,7 @@ class TestField(unittest.TestCase):
 
     @unittest.skip('Needs test data')
     def test_decode_encode_sint64(self):
-        numbers = [randint(1, 65536) for _ in range(1, randint(10, 30))]
+        numbers = [getrandbits(31) for _ in range(1, getrandbits(8))]
         field = Field('test', 'SInt64', 1)
 
         for n in numbers:
