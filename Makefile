@@ -2,13 +2,22 @@ PROTO = "tests/tests.proto"
 OUTPUT = generated
 INCLUDE = tests
 
-.PHONY: full-tests tests test micro-deps micro-test clean proto
+FILES = ${OUTPUT} unittest.py protobuf tests
+
+AMPY = $(shell which ampy) -p ${PORT}
+
+PORT = /dev/cu.usbserial-*
+
+.PHONY: full-tests tests test micro-deps micro-test clean proto test-dev test-data ${FILES}
 	
-full-tests: tests clean
+test: test-3 micro-test
 
-tests: test micro-test
+test-dev: proto test-data micro-test ${FILES}
 
-test: ${OUTPUT}/tests_upb2.py ${OUTPUT}/test_data_generated.py
+${FILES}:
+	${AMPY} put $@ $@
+
+test-3: ${OUTPUT}/tests_upb2.py ${OUTPUT}/test_data_generated.py
 	python3 -m unittest
 
 micro-deps:
@@ -17,10 +26,13 @@ micro-deps:
 micro-test: micro-deps
 	micropython -c 'import unittest; unittest.main("tests");'
 
+test-data: ${OUTPUT}/test_data_generated.py
+
+
 ${OUTPUT}/test_data_generated.py: ${OUTPUT}/tests_pb2.py
 	python3 -c 'from scripts.gen_test_data import main; main();'
 
-proto: clean ${OUTPUT}/tests_upb2.py ${OUTPUT}/tests_pb2.py
+proto: ${OUTPUT}/tests_upb2.py ${OUTPUT}/tests_pb2.py
 
 ${OUTPUT}/tests_upb2.py:
 	protoc --plugin=protoc-gen-custom=scripts/uprotobuf_plugin.py \

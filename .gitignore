@@ -3,3 +3,5 @@
 __pycache__
 
 tests/test_data_generated.py
+
+generated/test_data_generated.py
