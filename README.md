@@ -69,6 +69,25 @@ encoded_message = animal.encode()
 animal1 = Animal.decode(encoded_message)
 
 ```
+## Supported features
+
+* Protobuf 2 syntax
+* Scalar types encoding and decoding with implicit and explicit defaults
+* Nested messages
+* Message type fields
+* Enums without implicit default value
+* Repeated fields (partly implemented)
+
+## TODO
+
+* Protobuf 3 syntax
+* Repeated fields complete and test (including packed)
+* Test message fields
+* OneOf fields
+* Maps
+
+Groups won't be implemented since they are considered depricated.
+Required fields check is not implemented for now in favour of efficiency.
 
 ## Testing
 
