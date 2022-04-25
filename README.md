@@ -89,12 +89,46 @@ animal1 = Animal.decode(encoded_message)
 Groups won't be implemented since they are considered depricated.
 Required fields check is not implemented for now in favour of efficiency.
 
+## Tested hardware
+
+* PC (Mac)
+* ESP32-wroom
+* ESP8266 (LoLin V3)
+
+Pls, add your hardware if you have tested.
+
 ## Testing
 
-To run tests run the following command:
+To test locally run the following command:
 
 ```shell
-$ make full-tests
+$ make clean tests
 ```
 
-This will generate all needed classes for python3 and MicroPython, run tests on both of them and clean all generated files.
+This will generate all needed classes for python3 and MicroPython, run tests on both of them.
+
+## Testing on Device
+For testing on device you need Adafruite Ampy to be installed.
+
+```bash
+$ python3 -m pip install adafruit-ampy
+```
+This works and tested for ESP32 and ESP8266 device family. If you are willing to test on other devices, please, you are welcome to update.
+
+To upload files to your device connect it via USB and run:
+
+```bash
+$ make test-dev
+```
+
+This will upload all nesessary files to the board.
+Then connect to your device with REPL and run the following in it:
+
+```python
+import unittest
+unittest.main('tests')
+```
+
+This will do the job.
+
+If you have any issues or suggestions, you are welcome.
