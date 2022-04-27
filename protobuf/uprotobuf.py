@@ -219,6 +219,8 @@ class Field(object):
             self.default = b""
         elif self.type == 'Bool':
             self.default = False
+        elif self.type == 'Message':
+            self.default = self.cls()
         else:
             self.default = None
 
