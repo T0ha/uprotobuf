@@ -281,6 +281,9 @@ class Message(object):
     def __getitem__(self, key):
         return getattr(self, key)
 
+    def __eq__(self, o):
+        return self.encode() == o.encode()
+
    # FIXME: since __dict__ is readonly in MicroPython this is useless
    # def __setattr__(self, name, value):
    #     if self._initiated and name not in self.__dict__:
