@@ -130,7 +130,7 @@ class Field(object):
             raise UnsupportedTypeError
 
     def encode(self, value):
-        if value == self.default and self.type != 'Message':
+        if value == self.default:
             return b""
 
         if self.type in VarintSubTypes:

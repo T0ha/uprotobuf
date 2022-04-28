@@ -55,7 +55,7 @@ class TestMessage(unittest.TestCase):
 
             lambda: self.assertEqual(message.String, ""),
             lambda: self.assertEqual(message.Bytes, b""),
-            lambda: self.assertEqual(message.Message_, None),
+            lambda: self.assertEqual(message.Message_, Test1.TestEmbed()),
             lambda: self.assertEqual(message.Repeated, []),
         ]
 
