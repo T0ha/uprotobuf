@@ -41,7 +41,7 @@ Example:
 animal.proto:
 
 ```protobuf
-syntax = "proto2"
+syntax = "proto2";
 
 package animal;
 
@@ -60,8 +60,8 @@ To generate `animal_upb2.py` run
 
 Now you can start MicroPython shell and try:
 ```
-import animal_upb2
-animal = animal_upb2.Animal()
+from animal_upb2 import Animal
+animal = Animal()
 
 animal.name = "Dog"
 
