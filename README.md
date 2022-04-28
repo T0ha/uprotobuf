@@ -41,7 +41,7 @@ Example:
 animal.proto:
 
 ```protobuf
-syntax = "proto2"
+syntax = "proto2";
 
 package animal;
 
