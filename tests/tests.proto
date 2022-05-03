@@ -10,7 +10,10 @@ message Test1 {
   }
 
   message TestEmbed {
-    optional int32 Int32 = 1;
+    optional int32 Int32Embed = 1;
+    message TestEmbedInt {
+      optional int32 Int32EmbedInt = 1;
+    }
   }
 
   // Varint types

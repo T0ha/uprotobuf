@@ -9,12 +9,12 @@ class TestMessage(unittest.TestCase):
         self._assertDefault(message)
         self.assertEqual(message.encode(), b'')
 
-    def test_message_decode(self):
+    def test_message_decode_encode(self):
         for data in TEST_DATA:
             message = Test1.decode(data['encoded'])
             value = getattr(message, data['name'])
 
-            self.assertEqual(value, data['decoded'], "{}".format(data['name']))
+            self.assertEqual(value, data['decoded'], "Decode {}".format(data['name']))
             self._assertDefault(message, exclude=[FIELDS.index(data['name'])])
 
     def test_message_all_fields_decode(self):
@@ -30,6 +30,8 @@ class TestMessage(unittest.TestCase):
         for field, value in checks.items():
             decoded = getattr(message, field)
             self.assertEqual(decoded, value, "{}".format(field))
+
+        
             
 
     def _assertDefault(self, message, exclude=[]):

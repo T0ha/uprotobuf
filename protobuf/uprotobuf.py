@@ -239,14 +239,14 @@ class Field(object):
 
 class Message(object):
     _fields = []
-    _fields_by_tag = {}
-    _initiated = False
+    #_initiated = False
 
     def __init__(self):
+        self._fields_by_tag = {}
         for field in self._fields:
             self._fields_by_tag[field.tag] =  field
             setattr(self, field.name, field.default)
-        self._initiated = True
+        #self._initiated = True
 
     @classmethod
     def decode(cls, data):
