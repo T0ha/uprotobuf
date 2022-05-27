@@ -245,7 +245,10 @@ class Message(object):
         self._fields_by_tag = {}
         for field in self._fields:
             self._fields_by_tag[field.tag] =  field
-            setattr(self, field.name, field.default)
+            if field.type == 'Message':
+                setattr(self, field.name, field.cls())
+            else:
+                setattr(self, field.name, field.default)
         #self._initiated = True
 
     @classmethod
