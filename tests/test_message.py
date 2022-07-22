@@ -46,7 +46,7 @@ class TestMessage(unittest.TestCase):
 
             lambda: self.assertEqual(message.Bool, False),
 
-            lambda: self.assertEqual(message.Enum, Test1.Test1Enum.ValueA),
+            lambda: self.assertEqual(message.EnumWithDefault, Test1.Test1Enum.ValueA),
 
             lambda: self.assertEqual(message.Fixed32, 0),
             lambda: self.assertEqual(message.Fixed64, 0),
@@ -59,6 +59,8 @@ class TestMessage(unittest.TestCase):
             lambda: self.assertEqual(message.Bytes, b""),
             lambda: self.assertEqual(message.Message_, Test1.TestEmbed()),
             lambda: self.assertEqual(message.Repeated, []),
+
+            lambda: self.assertEqual(message.Enum, Test1.Test1Enum.ValueA),
         ]
 
         for i in range(0, len(asserts)):

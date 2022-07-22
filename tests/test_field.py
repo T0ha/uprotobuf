@@ -1,5 +1,5 @@
 import unittest
-from protobuf.uprotobuf import Field
+from protobuf.uprotobuf import Field, EnumValueError
 from random import getrandbits
 from .test_data import *
 
@@ -139,3 +139,20 @@ class TestField(unittest.TestCase):
         data = field.encode(b'test string')
         (tag, data) = field.get_tag(data)
         self.assertEqual((b'test string', b''), field.decode(tag, data))
+
+    def test_encode_enum(self):
+        field = Field('test', 'Enum', 1, cls=Enum1)
+        self.assertEqual(b'', field.encode(1))
+        self.assertEqual(b'', field.encode(Enum1.one))
+
+        self.assertEqual(b'\x08' + ENCODED_2, field.encode(2))
+        self.assertEqual(b'\x08' + ENCODED_2, field.encode(Enum1.two))
+
+    def test_decode_enum(self):
+        field = Field('test', 'Enum', 1, cls=Enum1)
+        (tag, data) = field.get_tag(b'\x08' + ENCODED_1)
+        self.assertEqual(field.decode(tag, data), (1, b''))
+        self.assertEqual(field.decode(tag, data), (Enum1.one, b''))
+
+        with self.assertRaises(EnumValueError):
+            Enum1.decode(b'\x08' + ENCODED_5)

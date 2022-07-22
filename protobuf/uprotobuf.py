@@ -53,12 +53,21 @@ class UnsupportedTypeError(Exception):
 class FieldNotFound(Exception):
     pass
 
-class Enum(dict):
-    def __setattr__(self, name, value):
-        self[name] = value
+class EnumValueError(Exception):
+    pass
 
-    def __getattr__(self, name):
-        return self[name]
+class Enum(dict):
+   # @classmethod
+   # def default(cls):
+   #     return min([ v for k, v in cls.__dict__.items() if not k.startswith("__")])
+
+    @classmethod
+    def decode(cls, value):
+        if value not in cls.__dict__.values():
+            raise EnumValueError
+        else:
+            return value
+            
 
 class Field(object):
     def __init__(self, name, type, id, repeated=False, required=False, default=None, **options):
@@ -99,6 +108,8 @@ class Field(object):
             (value, rest) = self._decode_varint(data)
             if self.type == 'Bool':
                 value = bool(value)
+            elif self.type == 'Enum':
+                value = self.cls.decode(value)
             elif self.type in SignedSubTypes:
                 value = self._to_signed(value)
             elif self.type in ZigZagSubTypes:
@@ -210,7 +221,7 @@ class Field(object):
         elif self.type in ('Float', 'Double'):
             self.default = 0.0
         elif self.type == 'Enum':
-            self.default = self.cls.__dict__.values()
+            self.default = self.cls.default
         elif self.type in VarintSubTypes + FixedSubTypes:
             self.default = 0
         elif self.type == 'String':

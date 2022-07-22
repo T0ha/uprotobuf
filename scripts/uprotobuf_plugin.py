@@ -38,6 +38,9 @@ def message_class(package, item, indent=0):
 
     for enum in item.enum_type:
         out += indent * "\t" + "\tclass {}(Enum):\n".format(enum.name)
+
+        out += (indent + 1) * '\t' + '\tdefault = {}\n'.format(enum.value[0].number)
+
         for value in enum.value:
             out += (indent + 1) * '\t' + '\t{} = {}\n'.format(value.name, value.number)
         out += "\n"

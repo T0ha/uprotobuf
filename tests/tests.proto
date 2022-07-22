@@ -27,7 +27,7 @@ message Test1 {
 
   optional bool Bool = 7;
 
-  optional Test1Enum Enum = 8 [default=ValueA];
+  optional Test1Enum EnumWithDefault = 8 [default=ValueA];
 
   // Fixed types
   optional fixed32 Fixed32 = 9;
@@ -42,4 +42,5 @@ message Test1 {
   optional bytes Bytes = 16;
   optional TestEmbed Message_ = 17;
   repeated int32 Repeated = 18;
+  optional Test1Enum Enum = 19;
 }
