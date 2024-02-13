@@ -58,12 +58,21 @@ def message_class(package, item, indent=0):
         if field.type == FProto.TYPE_ENUM: 
             enum_name = field.type_name.removeprefix(package + ".").removeprefix(item.name + ".")
             out += ", cls={}".format(enum_name)
-            if field.default_value:
-                out += ", default={}".format(enum_name + "." + field.default_value)
-        else:
-            if field.default_value:
-                out += ", default={}".format(field.default_value)
 
+        if field.default_value:
+            if field.type == FProto.TYPE_ENUM:
+                default = enum_name + "." + field.default_value
+            elif field.type == FProto.TYPE_BOOL:
+                default = "True" if field.default_value.lower() == "true" else "False"
+            elif field.type == FProto.TYPE_STRING:
+                default = repr(field.default_value)
+            elif field.type == FProto.TYPE_BYTES:
+                # protoc has given us the escaped value, unlike for strings,
+                # so just put quotes around it.
+                default = "b\"{}\"".format(field.default_value)
+            else:
+                default = field.default_value
+            out += ", default={}".format(default)
 
         if field.label == FProto.LABEL_REQUIRED:
             out += ", required=True"

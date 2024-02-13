@@ -46,8 +46,6 @@ class TestMessage(unittest.TestCase):
 
             lambda: self.assertEqual(message.Bool, False),
 
-            lambda: self.assertEqual(message.EnumWithDefault, Test1.Test1Enum.ValueA),
-
             lambda: self.assertEqual(message.Fixed32, 0),
             lambda: self.assertEqual(message.Fixed64, 0),
             lambda: self.assertEqual(message.Sfixed32, 0),
@@ -61,6 +59,14 @@ class TestMessage(unittest.TestCase):
             lambda: self.assertEqual(message.Repeated, []),
 
             lambda: self.assertEqual(message.Enum, Test1.Test1Enum.ValueA),
+
+            lambda: self.assertEqual(message.BoolWithDefault, True),
+            lambda: self.assertEqual(message.Int32WithDefault, 3),
+            lambda: self.assertEqual(message.EnumWithDefault, Test1.Test1Enum.ValueB),
+            lambda: self.assertEqual(message.StringWithDefault, "foo"),
+            lambda: self.assertEqual(message.StringWithEscapedDefault, '"foo"'),
+            lambda: self.assertEqual(message.BytesWithDefault, b"foo"),
+            lambda: self.assertEqual(message.BytesWithEscapedDefault, b'"foo"'),
         ]
 
         for i in range(0, len(asserts)):

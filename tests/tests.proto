@@ -27,20 +27,27 @@ message Test1 {
 
   optional bool Bool = 7;
 
-  optional Test1Enum EnumWithDefault = 8 [default=ValueA];
-
   // Fixed types
-  optional fixed32 Fixed32 = 9;
-  optional fixed64 Fixed64 = 10;
-  optional sfixed32 Sfixed32 = 11;
-  optional sfixed64 Sfixed64 = 12;
-  optional float Float = 13;
-  optional double Double = 14;
+  optional fixed32 Fixed32 = 8;
+  optional fixed64 Fixed64 = 9;
+  optional sfixed32 Sfixed32 = 10;
+  optional sfixed64 Sfixed64 = 11;
+  optional float Float = 12;
+  optional double Double = 13;
 
   // Lengths types
-  optional string String = 15;
-  optional bytes Bytes = 16;
-  optional TestEmbed Message_ = 17;
-  repeated int32 Repeated = 18;
-  optional Test1Enum Enum = 19;
+  optional string String = 14;
+  optional bytes Bytes = 15;
+  optional TestEmbed Message_ = 16;
+  repeated int32 Repeated = 17;
+  optional Test1Enum Enum = 18;
+
+  // Default values
+  optional bool BoolWithDefault = 19 [default=true];
+  optional int32 Int32WithDefault = 20 [default=3];
+  optional Test1Enum EnumWithDefault = 21 [default=ValueB];
+  optional string StringWithDefault = 22 [default="foo"];
+  optional string StringWithEscapedDefault = 23 [default="\"foo\""];
+  optional bytes BytesWithDefault = 24 [default="foo"];
+  optional bytes BytesWithEscapedDefault = 25 [default="\"foo\""];
 }
