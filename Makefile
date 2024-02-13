@@ -1,4 +1,4 @@
-PROTO = "tests/tests.proto"
+PROTO = tests/tests.proto
 OUTPUT = generated
 INCLUDE = tests
 
@@ -29,18 +29,18 @@ micro-test: micro-deps
 test-data: ${OUTPUT}/test_data_generated.py
 
 
-${OUTPUT}/test_data_generated.py: ${OUTPUT}/tests_pb2.py
+${OUTPUT}/test_data_generated.py: ${OUTPUT}/tests_pb2.py scripts/gen_test_data.py
 	python3 -c 'from scripts.gen_test_data import main; main();'
 
 proto: ${OUTPUT}/tests_upb2.py ${OUTPUT}/tests_pb2.py
 
-${OUTPUT}/tests_upb2.py:
+${OUTPUT}/tests_upb2.py: ${PROTO} scripts/uprotobuf_plugin.py
 	protoc --plugin=protoc-gen-custom=scripts/uprotobuf_plugin.py \
          --custom_out=${OUTPUT} \
          -I${INCLUDE} \
          ${PROTO}
 
-${OUTPUT}/tests_pb2.py:
+${OUTPUT}/tests_pb2.py: ${PROTO}
 	protoc --python_out=${OUTPUT} ${PROTO}
 	mv ${OUTPUT}/tests/*_pb2.py ${OUTPUT}
 	rm -rf ${OUTPUT}/tests

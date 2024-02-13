@@ -1,6 +1,6 @@
 import unittest
 from generated.test_data_generated import *
-from generated.tests_upb2 import Test1
+from generated.tests_upb2 import Test1, TopLevelEnum
 
 class TestMessage(unittest.TestCase):
     def test_message_defaults(self):
@@ -46,8 +46,6 @@ class TestMessage(unittest.TestCase):
 
             lambda: self.assertEqual(message.Bool, False),
 
-            lambda: self.assertEqual(message.EnumWithDefault, Test1.Test1Enum.ValueA),
-
             lambda: self.assertEqual(message.Fixed32, 0),
             lambda: self.assertEqual(message.Fixed64, 0),
             lambda: self.assertEqual(message.Sfixed32, 0),
@@ -60,7 +58,16 @@ class TestMessage(unittest.TestCase):
             lambda: self.assertEqual(message.Message_, Test1.TestEmbed()),
             lambda: self.assertEqual(message.Repeated, []),
 
-            lambda: self.assertEqual(message.Enum, Test1.Test1Enum.ValueA),
+            lambda: self.assertEqual(message.Enum, Test1.NestedEnum.ValueA),
+            lambda: self.assertEqual(message.Enum2, TopLevelEnum.ValueX),
+
+            lambda: self.assertEqual(message.BoolWithDefault, True),
+            lambda: self.assertEqual(message.Int32WithDefault, 3),
+            lambda: self.assertEqual(message.EnumWithDefault, Test1.NestedEnum.ValueB),
+            lambda: self.assertEqual(message.StringWithDefault, "foo"),
+            lambda: self.assertEqual(message.StringWithEscapedDefault, '"foo"'),
+            lambda: self.assertEqual(message.BytesWithDefault, b"foo"),
+            lambda: self.assertEqual(message.BytesWithEscapedDefault, b'"foo"'),
         ]
 
         for i in range(0, len(asserts)):

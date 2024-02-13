@@ -29,6 +29,13 @@ def getType(field_type):
     else: raise Exception()
     return type
 
+def enum_class(enum, indent=0):
+    out = indent * "\t" + "class {}(Enum):\n".format(enum.name)
+    out += (indent + 1) * '\t' + 'default = {}\n'.format(enum.value[0].number)
+    for value in enum.value:
+        out += (indent + 1) * '\t' + '{} = {}\n'.format(value.name, value.number)
+    return out
+
 def message_class(package, item, indent=0):
     prefix = package + "." + item.name
     out = indent * "\t" + "class {}(Message):\n".format(item.name)
@@ -37,12 +44,7 @@ def message_class(package, item, indent=0):
         out += "\n"
 
     for enum in item.enum_type:
-        out += indent * "\t" + "\tclass {}(Enum):\n".format(enum.name)
-
-        out += (indent + 1) * '\t' + '\tdefault = {}\n'.format(enum.value[0].number)
-
-        for value in enum.value:
-            out += (indent + 1) * '\t' + '\t{} = {}\n'.format(value.name, value.number)
+        out += enum_class(enum, indent + 1)
         out += "\n"
 
     out += indent * "\t" + "\t_fields=[\n"
@@ -58,12 +60,21 @@ def message_class(package, item, indent=0):
         if field.type == FProto.TYPE_ENUM: 
             enum_name = field.type_name.removeprefix(package + ".").removeprefix(item.name + ".")
             out += ", cls={}".format(enum_name)
-            if field.default_value:
-                out += ", default={}".format(enum_name + "." + field.default_value)
-        else:
-            if field.default_value:
-                out += ", default={}".format(field.default_value)
 
+        if field.default_value:
+            if field.type == FProto.TYPE_ENUM:
+                default = enum_name + "." + field.default_value
+            elif field.type == FProto.TYPE_BOOL:
+                default = "True" if field.default_value.lower() == "true" else "False"
+            elif field.type == FProto.TYPE_STRING:
+                default = repr(field.default_value)
+            elif field.type == FProto.TYPE_BYTES:
+                # protoc has given us the escaped value, unlike for strings,
+                # so just put quotes around it.
+                default = "b\"{}\"".format(field.default_value)
+            else:
+                default = field.default_value
+            out += ", default={}".format(default)
 
         if field.label == FProto.LABEL_REQUIRED:
             out += ", required=True"
@@ -85,8 +96,11 @@ def generateCode(request, response):
         output += "from protobuf.uprotobuf import Message, Field, Enum\n\n"
         output += "PACKAGE='{}'\n\n".format(proto_file.package)
 
+        for item in proto_file.enum_type:
+            if isinstance(item, EnumDescriptorProto):
+                output += enum_class(item)
+
         for item in proto_file.message_type:
-            print((item, type(item)), file=open('item.out', 'a'))
             if isinstance(item, DescriptorProto):
                 output += message_class("." + proto_file.package, item)
 
