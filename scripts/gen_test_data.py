@@ -29,7 +29,7 @@ def create_value(val, field_type=FProto.TYPE_INT32):
         return val if val >= 0 else None
 
     elif field_type == FProto.TYPE_ENUM:
-        return val if val in Test1.Test1Enum.values() else None
+        return val if val in Test1.NestedEnum.values() else None
 
     elif field_type == FProto.TYPE_BYTES:
         return "{}".format(val).encode('utf-8')

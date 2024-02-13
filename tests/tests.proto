@@ -2,8 +2,14 @@ syntax = "proto2";
 
 package Tests;
 
+enum TopLevelEnum {
+  ValueX=1;
+  ValueY=2;
+  ValueZ=3;
+}
+
 message Test1 {
-  enum Test1Enum {
+  enum NestedEnum {
     ValueA=1;
     ValueB=2;
     ValueC=3;
@@ -40,14 +46,15 @@ message Test1 {
   optional bytes Bytes = 15;
   optional TestEmbed Message_ = 16;
   repeated int32 Repeated = 17;
-  optional Test1Enum Enum = 18;
+  optional NestedEnum Enum = 18;
+  optional TopLevelEnum Enum2 = 19;
 
   // Default values
-  optional bool BoolWithDefault = 19 [default=true];
-  optional int32 Int32WithDefault = 20 [default=3];
-  optional Test1Enum EnumWithDefault = 21 [default=ValueB];
-  optional string StringWithDefault = 22 [default="foo"];
-  optional string StringWithEscapedDefault = 23 [default="\"foo\""];
-  optional bytes BytesWithDefault = 24 [default="foo"];
-  optional bytes BytesWithEscapedDefault = 25 [default="\"foo\""];
+  optional bool BoolWithDefault = 20 [default=true];
+  optional int32 Int32WithDefault = 21 [default=3];
+  optional NestedEnum EnumWithDefault = 22 [default=ValueB];
+  optional string StringWithDefault = 23 [default="foo"];
+  optional string StringWithEscapedDefault = 24 [default="\"foo\""];
+  optional bytes BytesWithDefault = 25 [default="foo"];
+  optional bytes BytesWithEscapedDefault = 26 [default="\"foo\""];
 }
