@@ -95,7 +95,6 @@ def generateCode(request, response):
         output += "PACKAGE='{}'\n\n".format(proto_file.package)
 
         for item in proto_file.message_type:
-            print((item, type(item)), file=open('item.out', 'a'))
             if isinstance(item, DescriptorProto):
                 output += message_class("." + proto_file.package, item)
 
